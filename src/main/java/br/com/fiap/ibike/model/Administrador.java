@@ -59,7 +59,7 @@ public class Administrador implements UserDetails{
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @JsonView(View.PatioFull.class)
-    private StatusAdministrador status;
+    private StatusAdministrador status=StatusAdministrador.ATIVO;
 
     @ManyToOne
     @JoinColumn(name = "id_patio", nullable = false) // nome da coluna FK no banco

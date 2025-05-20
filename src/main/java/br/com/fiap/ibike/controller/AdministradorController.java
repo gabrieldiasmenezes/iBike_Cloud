@@ -1,5 +1,6 @@
 package br.com.fiap.ibike.controller;
 
+import br.com.fiap.ibike.components.StatusAdministrador;
 import br.com.fiap.ibike.model.Administrador;
 import br.com.fiap.ibike.model.dto.AdministradorResponse.UserResponse;
 import br.com.fiap.ibike.repository.AdministradorRepository;
@@ -35,6 +36,7 @@ public class AdministradorController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse create(@RequestBody @Valid Administrador admin) {
+       admin.setStatus(StatusAdministrador.ATIVO);
        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         var userSaved=repository.save(admin);
         return new UserResponse(userSaved.getCpf(),userSaved.getEmail(),userSaved.getStatus());
@@ -66,7 +68,7 @@ public class AdministradorController {
         return repository.save(administrador);
     }
 
-    // Deletar própria conta
+    // Deletar própria contaa
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMe() {

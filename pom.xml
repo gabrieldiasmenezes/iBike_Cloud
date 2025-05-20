@@ -91,6 +91,7 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<finalName>ibike</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
