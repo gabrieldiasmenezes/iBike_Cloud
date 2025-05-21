@@ -7,10 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import br.com.fiap.ibike.View;
 import br.com.fiap.ibike.components.StatusAdministrador;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,33 +35,28 @@ import lombok.NoArgsConstructor;
 public class Administrador implements UserDetails{
     @Id
     @Column(length = 11)
-    @JsonView(View.PatioFull.class)
     private String cpf;
 
     @Column(name = "nm_adm", nullable = false)
-    @JsonView(View.PatioFull.class)
     private String nome;
 
     @Email
     @NotBlank
-     @Column(unique = true)
-     @JsonView(View.PatioFull.class)
+    @Column(unique = true)
     private String email;
 
     @NotBlank
     @Size(min = 5)
     @Column(nullable = false, length = 100)
-    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @JsonView(View.PatioFull.class)
-    private StatusAdministrador status=StatusAdministrador.ATIVO;
+    private StatusAdministrador status;
 
     @ManyToOne
     @JoinColumn(name = "id_patio", nullable = false) // nome da coluna FK no banco
-    @JsonIgnore
+    @JsonBackReference
     private Patio patio;
     
     @Override

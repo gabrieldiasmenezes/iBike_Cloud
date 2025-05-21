@@ -1,5 +1,6 @@
 package br.com.fiap.ibike.controller;
 
+import br.com.fiap.ibike.components.StatusMoto;
 import br.com.fiap.ibike.model.Moto;
 import br.com.fiap.ibike.repository.MotoRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,21 +51,23 @@ public class MotoController {
     // Buscas com paginação
     @GetMapping("/status")
     public Page<Moto> getByStatus(@RequestParam String status, Pageable pageable) {
-        return repository.findByStatus(status, pageable);
+        StatusMoto statusEnum = StatusMoto.valueOf(status.toUpperCase());
+        return repository.findByStatus(statusEnum, pageable);
     }
 
     @GetMapping("/patio")
-    public Page<Moto> getByPatio(@RequestParam String patio, Pageable pageable) {
-        return repository.findByPatio(patio, pageable);
+    public Page<Moto> getByPatio(@RequestParam String nome, Pageable pageable) {
+        return repository.findByPatio_Nome(nome, pageable);
     }
 
     // Busca por status e pátio combinados
     @GetMapping("/filtro")
     public Page<Moto> getByStatusAndPatio(
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) String patio,
+            @RequestParam(required = false) String nome,
             Pageable pageable) {
-        return repository.findByStatusAndPatio(status, patio, pageable);
+        StatusMoto statusEnum = StatusMoto.valueOf(status.toUpperCase());
+        return repository.findByStatusAndPatio(statusEnum, nome, pageable);
     }
 
 

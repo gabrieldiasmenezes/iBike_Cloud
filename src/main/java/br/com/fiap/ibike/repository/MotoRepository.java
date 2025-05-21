@@ -5,12 +5,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import br.com.fiap.ibike.components.StatusMoto;
 import br.com.fiap.ibike.model.Moto;
 
 public interface MotoRepository extends JpaRepository<Moto, String>, JpaSpecificationExecutor<Moto> {
-    Page<Moto> findByStatusAndPatio(String status, String patio, Pageable pageable);
+    Page<Moto> findByStatusAndPatio(StatusMoto status, String nome, Pageable pageable);
 
-    Page<Moto> findByPatio(String patio, Pageable pageable);
+    Page<Moto> findByPatio_Nome(String nome, Pageable pageable);
 
-    Page<Moto> findByStatus(String status, Pageable pageable);
+    Page<Moto> findByStatus(StatusMoto status, Pageable pageable);
 }
