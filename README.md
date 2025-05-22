@@ -3,6 +3,13 @@
 
 **Backend da plataforma iBike — monitoramento inteligente de pátios de motos**
 
+## Integrantes
+
+| Nomes | RM                  |  
+| ----------- | -------------------------- | 
+| `Gabriel Dias Menezes`      | `555019`       
+| `Júlia Soares Farias Dos Santos`  | `554609`       |
+
 ---
 
 ## 🛠️ Sobre o Projeto
