@@ -9,6 +9,7 @@
 | ----------- | -------------------------- | 
 | `Gabriel Dias Menezes`      | `555019`       
 | `Júlia Soares Farias Dos Santos`  | `554609`       |
+| `Sofia Domingues Gonçalves`  | `554920`       |
 
 ---
 
@@ -89,89 +90,46 @@ src/
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/jyx97/iBike_Java.git
-cd ibike-backend
+git clone https://github.com/jyx97/iBike_Cloud.git
+cd iBike_Cloud
 ```
-
-2. Execute a aplicação:
+2. Abra o projeto no VsCode:
+```bash
+code iBike_Cloud
+```
+3. Para rodar os arquivos scripts execute um de cada vez:
 
 ```bash
-./mvnw spring-boot:run
+dos2unix scripts/build.sh scripts/deploy.sh scripts/cleanUp.sh
 ```
-
-3. Acesse a API em:
-
-```
-http://localhost:8080
-```
-
-4. Para acessar a documentação Swagger (UI interativa):
-
-```
-http://localhost:8080/swagger-ui.html
-```
-
----
-
-### Gerar e executar .jar
-
-1. Compile e empacote:
 
 ```bash
-./mvnw clean package
+chmod +x scripts/build.sh scripts/deploy.sh scripts/cleanUp.sh 
 ```
-
-2. Execute o arquivo jar gerado:
 
 ```bash
-java -jar target/ibike-backend-0.0.1-SNAPSHOT.jar
+ ./scripts/build.sh
 ```
-
----
-
-### Rodar com Docker
-
-1. Crie o Dockerfile (se ainda não tiver):
-
-```dockerfile
-FROM openjdk:17-jdk-alpine
-VOLUME /tmp
-COPY target/ibike-backend-0.0.1-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
-```
-
-2. Build da imagem:
 
 ```bash
-docker build -t ibike-backend .
+ ./scripts/deploy.sh
 ```
 
-3. Execute o container:
+4. Depois do ultimo codigo ele te mostrará o id e com ele poderá testar a api rodando:
 
 ```bash
-docker run -p 8080:8080 ibike-backend
+<IP_GERADO>:8080/
 ```
 
----
+5. Caso queira excluir o grupo d recurso
+```bash
+./scripts/cleanUp.sh
+```
 
-## 🛠️ Configurações importantes
+6. Para acessar a documentação Swagger (UI interativa):
 
-No arquivo `src/main/resources/application.properties`, configure:
-
-```properties
-# Porta do servidor
-server.port=8080
-
-# Configurações de JWT (secret, tempo expiração, etc)
-jwt.secret=yourSecretKeyHere
-jwt.expirationMs=3600000
-
-# Dados MockAPI da Mottu (URL base)
-mockapi.url=https://mockapi.mottu.com.br/...
-
-# H2 Console (para debug e testes)
-spring.h2.console.enabled=true
-spring.h2.console.path=/h2-console
+```
+http://<IP_PUBLICO>:8080/swagger-ui.html
 ```
 
 ---
@@ -202,17 +160,9 @@ spring.h2.console.path=/h2-console
 
 ## 📈 Melhorias Futuras
 
-* Integração com banco PostgreSQL ou outro banco relacional real.
 * Dashboard web para visualização em tempo real.
 * Alertas e notificações automáticas para eventos críticos.
 * API pública para acesso externo controlado.
 * Implementação de testes automatizados (unitários e integração).
 
----
 
-## 🤝 Contribuição
-
-Contribuições são bem-vindas!
-Abra issues, envie pull requests, sugestões são muito apreciadas.
-
----
