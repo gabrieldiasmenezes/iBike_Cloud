@@ -1,10 +1,11 @@
 #!/bin/bash
+# =================================================
+# Limpeza de todos os recursos do Resource Group
+# =================================================
 
-# Variáveis
 RESOURCE_GROUP="rg-ibike"
 
-# Deletar Grupo de Recursos
-echo "Deletando grupo de recursos e todos os recursos associados..."
+echo "=== Excluindo Resource Group $RESOURCE_GROUP e todos os recursos dentro dele ==="
 az group delete --name $RESOURCE_GROUP --yes --no-wait
 
-echo "Recursos deletados com sucesso!"
+echo "=== Grupo de recursos esxcluidos com sucesso ==="

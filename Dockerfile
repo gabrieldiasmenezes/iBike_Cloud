@@ -1,31 +1,29 @@
-# Build Stage
-FROM maven:3.9.5-eclipse-temurin-17 AS build
+# Stage 1 - Build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
 COPY pom.xml .
-RUN mvn dependency:resolve
+RUN mvn dependency:go-offline
 
-COPY . .
-RUN mvn clean package -DskipTests
+COPY src ./src
+RUN mvn package -DskipTests
 
-# Run Stage
-FROM eclipse-temurin:17-jre-focal
+# Stage 2 - Runtime
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Copia qualquer .jar gerado e renomeia para app.jar
 COPY --from=build /app/target/*.jar app.jar
 
-# Cria usuário não-root (boa prática)
-RUN adduser --disabled-password --gecos '' springuser
+# Variáveis de ambiente padrão (podem ser sobrescritas no run)
+ENV DB_HOST=postgres \
+    DB_USER=postgres \
+    DB_PASSWORD=postgres \
+    DB_NAME=appdb
 
-# Cria o diretório /data e dá permissão ao usuário springuser
-RUN mkdir -p /data && chown -R springuser:springuser /data
-
-# Muda para o usuário não-root
-USER springuser
-
-# Expõe porta padrão do Spring Boot
 EXPOSE 8080
 
-# Roda a aplicação
+RUN adduser -D appuser
+USER appuser
+
 CMD ["java", "-jar", "app.jar"]
+
