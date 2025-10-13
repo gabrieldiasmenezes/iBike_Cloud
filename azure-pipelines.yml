@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  DB_USER: $(dbUser)        # Variáveis protegidas do Azure DevOps
+  DB_PASSWORD: $(dbPassword)
+
+steps:
+# 1. Maven build
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'clean install'
+  displayName: 'Build Maven Project'
+
+# 2. Executar testes automatizados
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'test'
+  displayName: 'Run Unit Tests'
+
+# 3. Publicar artefato JAR
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: 'target/*.jar'
+    artifactName: 'iBikeApp'
+  displayName: 'Publish Build Artifact'
+
+# 4. Build Docker e push para ACR usando seu script
+- script: |
+    chmod +x scripts/build.sh
+    ./scripts/build.sh
+  displayName: 'Build Docker Image and Push to ACR'
