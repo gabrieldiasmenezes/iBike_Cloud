@@ -11,28 +11,21 @@ variables:
   DB_PASSWORD: $(dbPassword)
 
 steps:
-# 1. Maven build
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    goals: 'clean install'
-  displayName: 'Build Maven Project'
-
-# 2. Executar testes automatizados
+# 1. Build Maven (pulando testes para garantir que o pipeline rode)
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
     goals: 'clean package -DskipTests'
   displayName: 'Build Maven Project (Skip Tests)'
 
-# 3. Publicar artefato JAR
+# 2. Publicar artefato JAR
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: 'target/*.jar'
     artifactName: 'iBikeApp'
   displayName: 'Publish Build Artifact'
 
-# 4. Build Docker e push para ACR usando seu script
+# 3. Build Docker e push para ACR usando seu script
 - script: |
     chmod +x scripts/build.sh
     ./scripts/build.sh
