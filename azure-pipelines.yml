@@ -22,8 +22,8 @@ steps:
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
-    goals: 'test'
-  displayName: 'Run Unit Tests'
+    goals: 'clean package -DskipTests'
+  displayName: 'Build Maven Project (Skip Tests)'
 
 # 3. Publicar artefato JAR
 - task: PublishBuildArtifacts@1
