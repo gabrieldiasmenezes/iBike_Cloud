@@ -47,7 +47,7 @@ stages:
         - task: AzureCLI@2
           displayName: 'Build Docker Image and Push to ACR'
           inputs:
-            azureSubscription: 'Conexao Azure'   # Sua Service Connection
+            azureSubscription: 'Azure Connection'   # Sua Service Connection
             scriptType: 'bash'
             scriptLocation: 'inlineScript'
             inlineScript: |
