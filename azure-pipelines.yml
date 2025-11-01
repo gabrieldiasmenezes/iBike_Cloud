@@ -67,7 +67,7 @@ stages:
         - task: AzureCLI@2
           displayName: 'Deploy to ACI via deploy.sh'
           inputs:
-            azureSubscription: 'Conexao Azure'
+            azureSubscription: 'Azure Connection'
             scriptType: 'bash'
             scriptLocation: 'inlineScript'
             inlineScript: |
