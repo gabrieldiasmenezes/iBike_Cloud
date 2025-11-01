@@ -7,7 +7,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  DB_USER: $(dbUser)        # Variáveis protegidas do Azure DevOps
+  DB_USER: $(dbUser)
   DB_PASSWORD: $(dbPassword)
 
 stages:
@@ -15,19 +15,15 @@ stages:
 # 1️⃣ Build Maven e Publicar Artefato
 # =========================
 - stage: Build
-  displayName: 'Build & Publish Artifact'
   jobs:
     - job: BuildJob
-      displayName: 'Build Maven Project'
       steps:
-        # Build Maven (skip tests para garantir pipeline)
         - task: Maven@3
           inputs:
             mavenPomFile: 'pom.xml'
             goals: 'clean package -DskipTests'
           displayName: 'Build Maven Project (Skip Tests)'
 
-        # Publicar JAR
         - task: PublishBuildArtifacts@1
           inputs:
             pathToPublish: 'target/ibike.jar'
@@ -35,67 +31,27 @@ stages:
           displayName: 'Publish Build Artifact'
 
 # =========================
-# 2️⃣ Build Docker e Push para ACR
+# 2️⃣ Docker Build & Push
 # =========================
 - stage: DockerBuildPush
-  displayName: 'Docker Build & Push to ACR'
   dependsOn: Build
   jobs:
     - job: DockerJob
-      displayName: 'Build Docker and Push to ACR'
       steps:
-        - task: AzureCLI@2
+        - script: |
+            chmod +x scripts/build.sh
+            ./scripts/build.sh
           displayName: 'Build Docker Image and Push to ACR'
-          inputs:
-            azureSubscription: 'Conexao Azure'   # sua Service Connection
-            scriptType: 'bash'
-            scriptLocation: 'inlineScript'
-            inlineScript: |
-              echo "=== Criando grupo de recursos (se não existir) ==="
-              az group create --name rg-ibike --location brazilsouth || true
-
-              echo "=== Build e push da imagem no ACR ==="
-              az acr build --registry acribike --image appibike:latest .
 
 # =========================
-# 3️⃣ Deploy no Azure Container Instance
+# 3️⃣ Deploy no ACI
 # =========================
 - stage: DeployACI
-  displayName: 'Deploy to Azure Container Instance'
   dependsOn: DockerBuildPush
   jobs:
-    - deployment: DeployJob
-      displayName: 'Deploy Application to ACI'
-      environment: 'production'
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-              - task: AzureCLI@2
-                displayName: 'Deploy ACI via Azure CLI'
-                inputs:
-                  azureSubscription: 'Conexao Azure'
-                  scriptType: 'bash'
-                  scriptLocation: 'inlineScript'
-                  inlineScript: |
-                    echo "=== Obtendo login server do ACR ==="
-                    ACR_LOGIN_SERVER=$(az acr show --name acribike --query loginServer -o tsv)
-
-                    echo "=== Criando container da aplicação no ACI ==="
-                    az container create \
-                      --resource-group rg-ibike \
-                      --name aci-app-ibike \
-                      --image $ACR_LOGIN_SERVER/appibike:latest \
-                      --cpu 1 --memory 1.5 \
-                      --ports 8080 \
-                      --registry-login-server $ACR_LOGIN_SERVER \
-                      --registry-username $(az acr credential show --name acribike --query "username" -o tsv) \
-                      --registry-password $(az acr credential show --name acribike --query "passwords[0].value" -o tsv) \
-                      --environment-variables DB_HOST=$(DB_HOST) DB_USER=$(DB_USER) DB_PASSWORD=$(DB_PASSWORD) DB_NAME=$(DB_NAME) \
-                      --restart-policy Always \
-                      --ip-address public
-
-              - script: |
-                  echo "=== Exibindo IP público do ACI ==="
-                  az container show -g rg-ibike -n aci-app-ibike --query ipAddress.ip -o tsv
-                displayName: 'Mostrar IP do ACI'
+    - job: DeployJob
+      steps:
+        - script: |
+            chmod +x scripts/deploy.sh
+            ./scripts/deploy.sh
+          displayName: 'Deploy to ACI'
