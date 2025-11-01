@@ -21,7 +21,7 @@ steps:
 # 2. Publicar artefato JAR
 - task: PublishBuildArtifacts@1
   inputs:
-    pathToPublish: 'target/*.jar'
+    pathToPublish: 'target/ibike.jar'
     artifactName: 'iBikeApp'
   displayName: 'Publish Build Artifact'
 
