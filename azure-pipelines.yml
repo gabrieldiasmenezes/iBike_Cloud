@@ -15,15 +15,19 @@ stages:
 # 1️⃣ Build Maven e Publicar Artefato
 # =========================
 - stage: Build
+  displayName: 'Build & Publish Artifact'
   jobs:
     - job: BuildJob
+      displayName: 'Build Maven Project'
       steps:
+        # Build Maven (skip tests)
         - task: Maven@3
           inputs:
             mavenPomFile: 'pom.xml'
             goals: 'clean package -DskipTests'
           displayName: 'Build Maven Project (Skip Tests)'
 
+        # Publicar JAR
         - task: PublishBuildArtifacts@1
           inputs:
             pathToPublish: 'target/ibike.jar'
@@ -34,24 +38,38 @@ stages:
 # 2️⃣ Docker Build & Push
 # =========================
 - stage: DockerBuildPush
+  displayName: 'Docker Build & Push to ACR'
   dependsOn: Build
   jobs:
     - job: DockerJob
+      displayName: 'Build Docker and Push to ACR'
       steps:
-        - script: |
-            chmod +x scripts/build.sh
-            ./scripts/build.sh
+        - task: AzureCLI@2
           displayName: 'Build Docker Image and Push to ACR'
+          inputs:
+            azureSubscription: 'Conexao Azure'   # Sua Service Connection
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              chmod +x scripts/build.sh
+              ./scripts/build.sh
 
 # =========================
-# 3️⃣ Deploy no ACI
+# 3️⃣ Deploy no Azure Container Instance
 # =========================
 - stage: DeployACI
+  displayName: 'Deploy Application to ACI'
   dependsOn: DockerBuildPush
   jobs:
     - job: DeployJob
+      displayName: 'Deploy to ACI'
       steps:
-        - script: |
-            chmod +x scripts/deploy.sh
-            ./scripts/deploy.sh
-          displayName: 'Deploy to ACI'
+        - task: AzureCLI@2
+          displayName: 'Deploy to ACI via deploy.sh'
+          inputs:
+            azureSubscription: 'Conexao Azure'
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              chmod +x scripts/deploy.sh
+              ./scripts/deploy.sh
