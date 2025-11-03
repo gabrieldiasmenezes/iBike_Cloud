@@ -9,13 +9,47 @@ pool:
 variables:
   DB_USER: $(dbUser)
   DB_PASSWORD: $(dbPassword)
-
+# Configure variables and stages
 stages:
+# =========================
+# 0️⃣ Testes (executa mvn test usando um serviço PostgreSQL)
+# =========================
+- stage: Test
+  displayName: 'Run Tests'
+  jobs:
+    - job: TestJob
+      displayName: 'Run Maven Tests'
+      pool:
+        vmImage: 'ubuntu-latest'
+      services:
+        postgres:
+          image: postgres:14
+          env:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: ibike
+          ports: ['5432:5432']
+          options: >-
+            --health-cmd "pg_isready -U postgres" --health-interval 10s --health-timeout 5s --health-retries 5
+      steps:
+        - script: |
+            echo "Aguardando PostgreSQL inicializar..."
+            # simples espera para o container ficar pronto
+            sleep 15
+            export DB_HOST=postgres
+            export DB_NAME=ibike
+            export DB_USER=postgres
+            export DB_PASSWORD=postgres
+            echo "Executando testes Maven (mvn -B test)"
+            mvn -B test
+          displayName: 'Run mvn test'
+
 # =========================
 # 1️⃣ Build Maven e Publicar Artefato
 # =========================
 - stage: Build
   displayName: 'Build & Publish Artifact'
+  dependsOn: Test
   jobs:
     - job: BuildJob
       displayName: 'Build Maven Project'
