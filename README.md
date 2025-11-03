@@ -150,7 +150,7 @@ O vídeo mostra:
 
 - CRUD completo acessando o banco de dados
 
-- 📹 [Link do vídeo YouTube](https://github.com/gabrieldiasmenezes/iBike_Cloud)
+- 📹 [Link do vídeo YouTube](https://youtu.be/yzCF0EkM8fM)
 
 ---
 
