@@ -1,168 +1,168 @@
-# iBike Backend
+# ☁️ iBike - Cloud & DevOps (Sprint 4)
 
-
-**Backend da plataforma iBike — monitoramento inteligente de pátios de motos**
-
-## Integrantes
-
-| Nomes | RM                  |  
-| ----------- | -------------------------- | 
-| `Gabriel Dias Menezes`      | `555019`       
-| `Júlia Soares Farias Dos Santos`  | `554609`       |
-| `Sofia Domingues Gonçalves`  | `554920`       |
+## 🚀 Visão Geral  
+Este repositório contém a **configuração de Cloud e DevOps** da aplicação **iBike**, plataforma inteligente para monitoramento de pátios de motocicletas.  
+O foco deste projeto é aplicar **integração contínua (CI)** e **entrega contínua (CD)** com **Azure DevOps**, automatizando todo o fluxo de build, teste, containerização e deploy em ambiente cloud.
 
 ---
 
-## 🛠️ Sobre o Projeto
+## 👥 Integrantes
 
-O **iBike Backend** é a API responsável pela gestão da plataforma iBike, que monitora pátios de motocicletas conectando dados de motos, funcionários (administradores), pátios e eventos de monitoramento.
-
-A plataforma facilita o controle do status das motos e da ocupação dos pátios, com eventos detalhados de entrada e saída. Os dados de monitoramento são simulados via integração com o MockAPI da Mottu, replicando dados externos reais.
-
----
-
-## 🎯 Funcionalidades
-
-* **Gerenciamento de Administradores**
-  Funcionários que gerenciam os pátios, com autenticação e autorização para acesso e modificação apenas dos seus próprios dados.
-
-* **Controle de Motos**
-  Cadastro, atualização e visualização das motos, filtrando por status e local de pátio.
-
-* **Gestão de Pátios**
-  Monitoramento da capacidade e status (disponível, cheio, sobrecarregado) dos pátios.
-
-* **Eventos de Monitoramento**
-  Registro dos eventos de entrada e saída das motos, permitindo rastreamento do fluxo.
-
-* **Segurança JWT**
-  Acesso seguro usando tokens JWT para autenticação e controle de permissão.
-
-* **Cache para Performance**
-  Cache de dados frequentes para otimizar consultas.
+| Nome | RM |
+|------|----|
+| **Gabriel Dias Menezes** | 555019 |
+| **Júlia Soares Farias dos Santos** | 554609 |
+| **Sofia Domingues Gonçalves** | 554920 |
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📘 Sumário
 
+1. [Resumo](#resumo)  
+2. [Arquitetura da Solução](#arquitetura-da-solução)  
+3. [Pipelines CI/CD](#pipelines-cicd)  
+4. [Persistência de Dados](#persistência-de-dados)  
+5. [Como Executar](#como-executar)  
+6. [Vídeo da Demonstração](#vídeo-da-demonstração)  
+
+---
+
+## 🧩 Resumo
+
+A aplicação **iBike Cloud** foi configurada no **Azure DevOps** para automatizar todo o ciclo de desenvolvimento, desde o build do backend até o deploy da imagem Docker em um **Azure Container Instance (ACI)**.
+
+O projeto contempla:
+- Integração com **GitHub** (trigger automática em `main`);
+- Build Maven e geração de artefato `.jar`;
+- Execução de testes automatizados;
+- Criação e push de imagem Docker no **Azure Container Registry (ACR)**;
+- Deploy automático no **Azure Container Instance (ACI)**;
+- Variáveis de ambiente protegidas para conexão com o banco de dados.
+
+---
+
+## 🏗️ Arquitetura da Solução
+
+A arquitetura é composta pelos seguintes componentes:
+
+- **Azure DevOps Pipelines** → Responsável por CI/CD  
+- **Azure Container Registry (ACR)** → Armazena as imagens Docker  
+- **Azure Container Instance (ACI)** → Executa o container da aplicação  
+- **PostgreSQL** → Banco de dados relacional  
+- **GitHub Repository** → Armazena o código fonte e aciona o pipeline  
+
+📊 **Fluxo Geral:**
+
+```css
+GitHub Push (branch main)
+        ↓
+Azure DevOps Pipeline (YAML)
+        ↓
+Build Maven + Testes
+        ↓
+Build Docker + Push no ACR
+        ↓
+Deploy automático no ACI
 ```
-src/
-└── main/
-    ├── java/br/com/fiap/ibike/
-    │   ├── config/           # Configurações gerais e Swagger
-    │   ├── controller/       # REST Controllers
-    │   ├── model/            # Entidades JPA, enums
-    │   ├── repository/       # Spring Data JPA Repositories
-    │   ├── security/         # Configurações de segurança e JWT
-    │   └── service/          # Serviços e regras de negócio
-    └── resources/
-        ├── application.properties # Configurações do projeto
-        └── data.sql                # Dados iniciais para banco em memória
-```
 
 ---
 
-## ⚙️ Tecnologias Utilizadas
+## 🔄 Pipelines CI/CD
 
-| Tecnologia            | Finalidade                                   |
-| --------------------- | -------------------------------------------- |
-| Java 17               | Linguagem principal                          |
-| Spring Boot           | Framework para API REST                      |
-| Spring Data JPA       | Acesso ao banco com JPA                      |
-| Spring Security (JWT) | Autenticação e autorização                   |
-| H2 Database           | Banco em memória para desenvolvimento        |
-| Lombok                | Redução de código boilerplate                |
-| Swagger/OpenAPI       | Documentação interativa da API               |
-| MockAPI (Mottu)       | Simulação de dados externos de monitoramento |
+O arquivo `azure-pipelines.yml` foi configurado em **YAML**, contendo três estágios principais:
+
+### **1️⃣ CI - Build e Testes**
+- Disparado automaticamente a cada `push` na branch `main`  
+- Executa `mvn clean package -DskipTests` e testes unitários  
+- Publica o artefato `.jar` no Azure DevOps  
+
+### **2️⃣ CD - Build Docker**
+- Constrói a imagem Docker usando o `scripts/build.sh`  
+- Faz o push da imagem para o **Azure Container Registry (ACR)**  
+- As credenciais do ACR estão configuradas via **Service Connection segura**  
+
+### **3️⃣ Deploy no Azure**
+- Executa o `scripts/deploy.sh`  
+- Cria e atualiza o **Azure Container Instance**  
+- Usa variáveis de ambiente seguras (`DB_USER`, `DB_PASSWORD`)  
+- Exibe o IP público para acesso da aplicação  
 
 ---
 
-## 🚀 Como Rodar o Projeto
+## 🗄️ Persistência de Dados
 
-### Pré-requisitos
+A aplicação utiliza um **banco PostgreSQL hospedado no Azure**.  
+As credenciais e configurações de conexão são armazenadas como **variáveis protegidas no Azure DevOps** para garantir segurança.
 
-* Java 17 instalado
-* Maven instalado (ou wrapper Maven incluso)
-* (Opcional) Docker para rodar banco externo
+As entidades persistidas incluem:
+- Administradores  
+- Pátios  
+- Motos  
+- Eventos de monitoramento  
 
-### Rodando localmente com Maven
+---
 
-1. Clone o repositório:
+## ⚙️ Como Executar
+
+### 🧰 Pré-requisitos
+- Java 17  
+- Maven  
+- Docker Desktop  
+- Acesso ao Azure DevOps  
+
+### 🧩 Passos Locais
 
 ```bash
+# Clonar o repositório
 git clone https://github.com/jyx97/iBike_Cloud.git
 cd iBike_Cloud
-```
-2. Abra o projeto no VsCode:
-```bash
-code iBike_Cloud
-```
-3. Para rodar os arquivos scripts execute um de cada vez:
 
-```bash
+# Dar permissão e rodar scripts
 dos2unix scripts/build.sh scripts/deploy.sh scripts/cleanUp.sh
-```
+chmod +x scripts/*.sh
 
-```bash
-chmod +x scripts/build.sh scripts/deploy.sh scripts/cleanUp.sh 
-```
+# Build do container
+./scripts/build.sh
 
-```bash
- ./scripts/build.sh
-```
+# Deploy no Azure
+./scripts/deploy.sh
 
-```bash
- ./scripts/deploy.sh
-```
+# Após o deploy, a API estará disponível em:
+http://<IP_PUBLICO>:8080/swagger-ui.html
 
-4. Depois do ultimo codigo ele te mostrará o id e com ele poderá testar a api rodando:
-
-```bash
-<IP_GERADO>:8080/
-```
-
-5. Caso queira excluir o grupo d recurso
-```bash
+# Para remover os recursos criados:
 ./scripts/cleanUp.sh
 ```
+---
 
-6. Para acessar a documentação Swagger (UI interativa):
+## 🎥 Vídeo da Demonstração
 
-```
-http://<IP_PUBLICO>:8080/swagger-ui.html
-```
+O vídeo mostra:
+
+- Configuração do Azure DevOps
+
+- Execução do pipeline (CI/CD)
+
+- Publicação do artefato e imagem Docker
+
+- Deploy no Azure Container Instance
+
+- CRUD completo acessando o banco de dados
+
+- 📹 [Link do vídeo YouTube](https://github.com/gabrieldiasmenezes/iBike_Cloud)
 
 ---
 
-## 📋 Exemplos de Endpoints
+## ✅ Conclusão
+O projeto cumpre todos os requisitos de DevOps da Sprint 4, incluindo:
 
-| Método | Endpoint              | Descrição                                  |
-| ------ | --------------------- | ------------------------------------------ |
-| POST   | `/administrador`      | Cadastro de administrador                  |
-| PUT    | `/administrador/{id}` | Atualizar dados do administrador (próprio) |
-| DELETE | `/administrador/{id}` | Deletar conta do administrador (próprio)   |
-| GET    | `/patio`              | Listar todos os pátios                     |
-| POST   | `/patio`              | Criar novo pátio                           |
-| GET    | `/patio/{id}`         | Buscar pátio por ID                        |
-| GET    | `/moto`               | Listar motos com filtros                   |
-| GET    | `/monitoramento`      | Listar eventos de monitoramento            |
+- Integração com GitHub
 
----
+- Pipeline automática (CI/CD)
 
-## 🔒 Segurança
+- Geração e publicação de artefato
 
-* **JWT** para autenticação.
-* Usuários só podem acessar e alterar seus próprios dados.
-* Spring Security protege todos endpoints sensíveis.
-* Configuração de roles e permissões.
+- Deploy automatizado em ACI com Docker
 
----
-
-## 📈 Melhorias Futuras
-
-* Dashboard web para visualização em tempo real.
-* Alertas e notificações automáticas para eventos críticos.
-* API pública para acesso externo controlado.
-* Implementação de testes automatizados (unitários e integração).
-
+- Persistência de dados e variáveis seguras
 
