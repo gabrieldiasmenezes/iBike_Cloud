@@ -1,6 +1,7 @@
 # ☁️ iBike - Cloud & DevOps (Sprint 4)
 
-## 🚀 Visão Geral  
+## 🚀 Visão Geral
+  
 Este repositório contém a **configuração de Cloud e DevOps** da aplicação **iBike**, plataforma inteligente para monitoramento de pátios de motocicletas.  
 O foco deste projeto é aplicar **integração contínua (CI)** e **entrega contínua (CD)** com **Azure DevOps**, automatizando todo o fluxo de build, teste, containerização e deploy em ambiente cloud.
 
